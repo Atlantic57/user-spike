@@ -3,3 +3,28 @@
  * Description: Starter Theme to use with Timber
  * Author: Upstatement and YOU!
 */
+
+dt, dd {
+  float: left;
+  display: inline-block;
+  margin: 0;
+  padding: 5px 0;
+}
+
+dt {
+  width: 15%;
+  font-weight: bold;
+}
+
+dd {
+  width: 85%;
+}
+
+dl {
+  width: 100%;
+  float: left;
+}
+
+footer {
+  padding: 100px 0 0;
+}

@@ -1,0 +1,34 @@
+{% extends 'base.twig' %}
+{% set user = TimberUser(user) %}
+{% set portrait = TimberImage(user_acf.portrait) %}
+{% block content %}
+  <h1>{{ user.first_name }} {{ user.last_name }}</h1>
+  <img src="{{ portrait.src }}" width="120" />
+  <h2>Default Fields</h2>
+  <dl>
+    <dt>Username</dt>
+    <dd>{{ user.name }}</dd>
+    <dt>Email</dt>
+    <dd>{{ user.user_email }}</dd>
+    <dt>URL</dt>
+    <dd>{{ user.user_url }}</dd>
+  </dl>
+  <h2>Custom Fields</h2>
+  <dl>
+    <dt>Job Title</dt>
+    <dd>{{ user_acf.job_title }}</dd>
+    <dt>Institution</dt>
+    <dd>{{ user_acf.institution }}</dd>
+    <dt>Academic Degree</dt>
+    <dd>{{ user_acf.academic_degree }}</dd>
+    <dt>Areas of Interest</dt>
+    <dd>
+      {% for interest in user_acf.areas_of_interest %}
+        {{ interest }}{% if not loop.last %},{% endif %}
+      {% endfor %}
+    </dd>
+  </dl>
+  {% if current_user_id == user.id %}
+    <a href="/users/edit/{{ user.id }}">Edit My Profile {{ current_user }}</a>
+  {% endif %}
+{% endblock %}

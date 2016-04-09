@@ -1,8 +1,11 @@
 <ul>
-{% for item in menu %}
-	<li class="{{item.classes | join(' ')}}">
-		<a href="{{item.get_link}}">{{item.title}}</a>
-		{% include "menu.twig" with {'menu': item.get_children} %}
-	</li>
-{% endfor %}
+	{% if is_logged_in %}
+		<li><a href="{{ logout_link }}">Logout</a></li>
+		<li><a href="/users/{{ current_user_id }}">My Profile</a></li>
+		<li><a href="/users/edit/{{ current_user_id }}">Edit My Profile</a></li>
+	{% else %}
+		<li><a href="#">Login</a></li>
+		<li><a href="#">Register</a></li>
+	{% endif %}
+	<li><a href="/users">Users</a></li>
 </ul>

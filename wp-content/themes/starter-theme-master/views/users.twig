@@ -1,0 +1,10 @@
+{% extends 'base.twig' %}
+{% block content %}
+  <h1>Users</h1>
+  <ul>
+  {% for user in subscribers %}
+    {% set user = TimberUser(user) %}
+    <li><a href="{{ user.id }}">{{ user.last_name }}, {{ user.first_name }}</a></li>
+  {% endfor %}
+  </ul>
+{% endblock %}

@@ -1,0 +1,49 @@
+{% extends 'base.twig' %}
+{% set user = TimberUser(user) %}
+{% set portrait = TimberImage(user_acf.portrait) %}
+
+{% block content %}
+  <h1>Editing {{ user.first_name }} {{ user.last_name }}</h1>
+  <form method="POST" action="/users/update/{{ user.id }}" enctype="multipart/form-data">
+    <img src="{{ portrait.src }}" width="120" />
+    <input type="file" name="portrait" accept="image/*" value="{{ portrait.src }}" id="portrait">
+    <h2>Default Fields</h2>
+    <dl>
+      <dt>Username</dt>
+      <dd><input type="text" value="{{ user.name }}" disabled size="50"></dd>
+      <dt>Email</dt>
+      <dd><input type="email" name="email" value="{{ user.user_email }}" size="50"></dd>
+      <dt>URL</dt>
+      <dd><input type="text" name="website" value="{{ user.user_url }}" size="50"></dd>
+    </dl>
+    <h2>Custom Fields</h2>
+    <dl>
+      <dt>Job Title</dt>
+      <dd><input type="text" name="job_title" value="{{ user_acf.job_title }}" size="50"></dd>
+      <dt>Institution</dt>
+      <dd><input type="text" name="institution" value="{{ user_acf.institution }}" size="50"></dd>
+      <dt>Academic Degree</dt>
+      <dd>
+        <select id="{{ academic_degrees.key }}" name="academic_degree">
+        {% for degree in academic_degrees.choices %}
+          <option {% if user_acf.academic_degree == degree %}selected{% endif %}>{{ degree }}</option>
+        {% endfor %}
+        </select>
+      </dd>
+      <dt>Areas of Interest</dt>
+      <dd>
+        <ul>
+          {% for interest in areas_of_interest.choices %}
+          <li>
+            <label>
+              <input name="areas_of_interest[]" type="checkbox" value="{{ interest }}" {% if interest in user_acf.areas_of_interest %}checked{% endif %}>{{ interest }}
+            </label>
+          </li>
+          {% endfor %}
+        </ul>
+      </dd>
+    </dl>
+    <input type="hidden" name="user_id" value="{{ user.id }}">
+    <input type="submit">
+  </form>
+{% endblock %}
