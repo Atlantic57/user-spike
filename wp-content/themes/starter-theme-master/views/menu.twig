@@ -4,8 +4,8 @@
 		<li><a href="/users/{{ current_user_id }}">My Profile</a></li>
 		<li><a href="/users/edit/{{ current_user_id }}">Edit My Profile</a></li>
 	{% else %}
-		<li><a href="#">Login</a></li>
-		<li><a href="#">Register</a></li>
+		<li><a href="/wp-login.php">Login</a></li>
+		<li><a href="/wp-login.php?action=register">Register</a></li>
 	{% endif %}
 	<li><a href="/users">Users</a></li>
 </ul>

@@ -6,7 +6,11 @@
 			<section class="article-content">
 				<h1 class="article-h1">{{post.title}}</h1>
 				<div class="article-body">
-					{{post.content}}
+					{% if is_logged_in %}
+						{{post.content}}
+					{% else %}
+						<p>You need to be logged in to see content.</p>
+					{% endif %}
 				</div>
 			</section>
 		</article>

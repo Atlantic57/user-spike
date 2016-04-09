@@ -5,17 +5,14 @@
 
 ob_start();
 
+// Update standard fields
 $user_data = wp_update_user(
   array(
     'ID' => $_POST['user_id'],
     'user_email' => $_POST['email'],
     'user_url' => $_POST['website']
-  ));
-
-update_user_meta($_POST['user_id'], 'job_title', $_POST['job_title']);
-update_user_meta($_POST['user_id'], 'institution', $_POST['institution']);
-update_user_meta($_POST['user_id'], 'academic_degree', $_POST['academic_degree']);
-update_user_meta($_POST['user_id'], 'areas_of_interest', $_POST['areas_of_interest']);
+  )
+);
 
 // File upload requires a little more english
 if ( !function_exists('wp_handle_upload') ) {
@@ -38,6 +35,14 @@ if ( $movefile && !isset($movefile['error']) ) {
   $attach_id = wp_insert_attachment($attachment, $movefile['file']);
   update_user_meta($_POST['user_id'], 'portrait', $attach_id);
 }
+
+
+update_user_meta($_POST['user_id'], 'job_title', $_POST['job_title']);
+update_user_meta($_POST['user_id'], 'institution', $_POST['institution']);
+update_user_meta($_POST['user_id'], 'academic_degree', $_POST['academic_degree']);
+update_user_meta($_POST['user_id'], 'areas_of_interest', $_POST['areas_of_interest']);
+
+
 
 if ( is_wp_error( $user_data ) ) {
     // There was an error; possibly this user doesn't exist.

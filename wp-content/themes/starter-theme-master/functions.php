@@ -39,6 +39,11 @@ function member_check_shortcode( $atts, $content = null ) {
 	 Timber::load_template('page-user-update.php', null, 200, $params);
  });
 
+ // A single user's page
+ Timber::add_route('login/', function($params){
+	 Timber::load_template('page-user-login.php', null, 200, $params);
+ });
+
 Timber::$dirname = array('templates', 'views');
 
 class StarterSite extends TimberSite {
@@ -70,7 +75,7 @@ class StarterSite extends TimberSite {
 		$context['site'] = $this;
 		$context['is_logged_in'] = is_user_logged_in();
 		$context['current_user_id'] = get_current_user_id();
-		$context['logout_link'] = wp_logout_url();
+		$context['logout_link'] = wp_logout_url( home_url() );
 		return $context;
 	}
 
