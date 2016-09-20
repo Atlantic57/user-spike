@@ -163,13 +163,21 @@ class WPUM_Shortcodes {
 			'label'    => esc_html__( 'Login', 'wpum' )
 		), $atts ) );
 
-		$url = wpum_get_core_page_url( 'login' );
+		if( is_user_logged_in() ) {
 
-		if( ! empty( $redirect ) ) {
-			$url = add_query_arg( array( 'redirect_to' => urlencode( $redirect ) ), $url );
+			$output = '';
+
+		} else {
+
+			$url = wpum_get_core_page_url( 'login' );
+
+			if( ! empty( $redirect ) ) {
+				$url = add_query_arg( array( 'redirect_to' => urlencode( $redirect ) ), $url );
+			}
+
+			$output = '<a href="'. esc_url( $url ) .'" class="wpum-login-link">'.esc_html( $label ).'</a>';
+
 		}
-
-		$output = '<a href="'. esc_url( $url ) .'" class="wpum-login-link">'.esc_html( $label ).'</a>';
 
 		return $output;
 
@@ -356,7 +364,7 @@ class WPUM_Shortcodes {
 			$args = array(
 				'id'   => 'wpum-guests-disabled',
 				'type' => 'notice',
-				'text' => sprintf( __('This content is available to members only. Please <a href="%s">login</a> or <a href="%s">register</a> to view this area.', 'wpum'), wpum_get_core_page_url('login'), wpum_get_core_page_url('register')  )
+				'text' => sprintf( __('This content is available to members only. Please <a href="%s">login</a> or <a href="%s">register</a> to view this area.', 'wpum'), wpum_create_redirect_url( wpum_get_core_page_url('login'), get_permalink() ), wpum_get_core_page_url('register')  )
 			);
 			$warning = wpum_message( apply_filters( 'wpum_restrict_logged_in_message', $args ), true );
 
@@ -395,7 +403,7 @@ class WPUM_Shortcodes {
 			$args = array(
 				'id'   => 'wpum-guests-disabled',
 				'type' => 'notice',
-				'text' => sprintf( __('This content is available to members only. Please <a href="%s">login</a> or <a href="%s">register</a> to view this area.', 'wpum'), wpum_get_core_page_url('login'), wpum_get_core_page_url('register')  )
+				'text' => sprintf( __('This content is available to members only. Please <a href="%s">login</a> or <a href="%s">register</a> to view this area.', 'wpum'), wpum_create_redirect_url( wpum_get_core_page_url('login'), get_permalink() ), wpum_get_core_page_url('register')  )
 			);
 			$warning = wpum_message( apply_filters( 'wpum_restrict_to_users_message', $args ), true );
 
@@ -436,7 +444,7 @@ class WPUM_Shortcodes {
 			$args = array(
 				'id'   => 'wpum-guests-disabled',
 				'type' => 'notice',
-				'text' => sprintf( __('This content is available to members only. Please <a href="%s">login</a> or <a href="%s">register</a> to view this area.', 'wpum'), wpum_get_core_page_url('login'), wpum_get_core_page_url('register')  )
+				'text' => sprintf( __('This content is available to members only. Please <a href="%s">login</a> or <a href="%s">register</a> to view this area.', 'wpum'), wpum_create_redirect_url( wpum_get_core_page_url('login'), get_permalink() ), wpum_get_core_page_url('register')  )
 			);
 			$warning = wpum_message( apply_filters( 'wpum_restrict_to_user_roles_args', $args ), true );
 
@@ -493,21 +501,14 @@ class WPUM_Shortcodes {
 
 		if( $paged == 1 ) {
 			$offset = 0;
-    } else {
+		} else {
 			$offset = ( $paged -1 ) * $number;
-    }
+		}
 
 		// Prepare the query.
 		$args = array();
-
 		$args['number'] = $number;
 		$args['offset'] = $offset;
-
-		// Trigger search and remove offset.
-		if( wpum_directory_has_search_form( $directory_id ) && isset( $_POST['search_user'] ) ) {
-			$args['search'] = sanitize_text_field( $_POST['search_user'] );
-			$args['offset'] = null;
-		}
 
 		$user_query = new WP_User_Query( apply_filters( "wpum_user_directory_query", $args, $directory_id ) );
 

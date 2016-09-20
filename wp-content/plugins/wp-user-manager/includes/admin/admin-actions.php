@@ -263,22 +263,6 @@ function wpum_display_rating_notice() {
 }
 
 /**
- * Function to display content of the "restore_fields" option.
- *
- * @since 1.2.6
- * @return array
-*/
-function wpum_option_restore_fields() {
-
-	$output = '<a id="wpum-restore-fields" href="'.esc_url( add_query_arg( array('tool' => 'restore-fields') , admin_url( 'users.php?page=wpum-settings&tab=tools' ) ) ).'" class="button">'.__('Restore fields', 'wpum').'</a>';
-	$output .= '<br/><p class="description">' . __('Click the button to restore the broken fields that disappeared from the registration form.', 'wpum') . '</p>';
-
-	echo $output;
-
-}
-add_action( 'wpum_restore_fields', 'wpum_option_restore_fields' );
-
-/**
  * Fix the broken fields into the previous update.
  *
  * @since 1.2.6
@@ -323,3 +307,58 @@ function wpum_run_fields_fix() {
 
 }
 add_action( 'admin_init', 'wpum_run_fields_fix' );
+
+/**
+ * Display button to trigger the test email.
+ *
+ * @since 1.4.0
+ * @return void
+ */
+function wpum_send_test_mail_button() {
+
+	$trigger_test_mail_url = wp_nonce_url( add_query_arg( array( 'tool' => 'send_test_mail' ), admin_url( 'users.php?page=wpum-settings&tab=emails' ) ), 'tool', 'send_test_mail_nonce' );
+
+	?>
+
+	<a href="<?php echo esc_url( $trigger_test_mail_url ); ?>" class="button"><?php esc_html_e( 'Send test email', 'wpum' ); ?></a>
+	<p><?php echo sprintf( esc_html__( 'Test email will be sent to %s', 'wpum' ), get_option( 'admin_email' ) ); ?></p>
+
+	<?php
+
+}
+add_action( 'wpum_trigger_test_email', 'wpum_send_test_mail_button' );
+
+/**
+ * Send a test email to the site's admin email.
+ *
+ * @since 1.4.0
+ * @return void
+ */
+function wpum_send_test_mail() {
+
+	if( isset( $_GET['tool'] ) && $_GET['tool'] == 'send_test_mail' && current_user_can( 'manage_options' ) ) {
+
+		if ( ! wp_verify_nonce( $_GET['send_test_mail_nonce'], 'tool' ) ) {
+			return;
+		}
+
+		// Details of the site.
+		$sitename    = wp_specialchars_decode( get_option( 'blogname' ), ENT_QUOTES );
+		$admin_email = get_option( 'admin_email' );
+
+		// Details of the message.
+		$subject = sprintf( esc_html( 'Test email from: %s' ), $sitename );
+		$message = esc_html( 'The following is a simple test email to verify that emails are correctly being delivered from your website.' );
+
+		WPUM()->emails->__set( 'heading', esc_html__( 'Test Email', 'wpum' ) );
+		WPUM()->emails->send( $admin_email, $subject, $message );
+
+		$redirect_url = add_query_arg( array( 'message' => 'test_mail' ), admin_url( 'users.php?page=wpum-settings&tab=emails' ) );
+
+		wp_redirect( $redirect_url );
+		exit;
+
+	}
+
+}
+add_action( 'admin_init', 'wpum_send_test_mail' );

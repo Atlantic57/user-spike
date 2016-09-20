@@ -3,7 +3,7 @@
 Plugin Name: Gravity Forms User Registration Add-On
 Plugin URI: http://www.gravityforms.com
 Description: Allows WordPress users to be automatically created upon submitting a Gravity Form
-Version: 3.2.5
+Version: 3.4
 Author: rocketgenius
 Author URI: http://www.rocketgenius.com
 Text Domain: gravityformsuserregistration
@@ -27,7 +27,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 **/
 
-define( 'GF_USER_REGISTRATION_VERSION', '3.2.5' );
+define( 'GF_USER_REGISTRATION_VERSION', '3.4' );
 
 // If Gravity Forms is loaded, bootstrap the User Registration Add-On.
 add_action( 'gform_loaded', array( 'GF_User_Registration_Bootstrap', 'load' ), 5 );
@@ -78,71 +78,4 @@ function gf_user_registration() {
  */
 function gf_user_registration_login_form() {
 	return gf_user_registration()->get_login_html();
-}
-
-if ( ! function_exists( 'wp_new_user_notification' ) ) {
-
-	/**
-	 * Overrides wp_new_user_notification to allow sending passwords in plain text
-	 *
-	 * Forked from WordPress 4.4.1
-	 *
-	 * @see wp_new_user_notification()
-	 * @see GF_User_Registration->log_wp_mail()
-	 *
-	 * @param int    $user_id        The ID of the user that the notification is being sent to.
-	 * @param string $plaintext_pass The password being sent to the user.
-	 * @param string $notify         Whether the admin should be notified.
-	 *                               If 'admin', only the admin. If 'both', user and admin.
-	 */
-	function wp_new_user_notification( $user_id, $plaintext_pass = '', $notify = '' ) {
-		global $wpdb, $wp_hasher;
-		$user = get_userdata( $user_id );
-
-		// The blogname option is escaped with esc_html on the way into the database in sanitize_option
-		// we want to reverse this for the plain text arena of emails.
-		$blogname = wp_specialchars_decode( get_option( 'blogname' ), ENT_QUOTES );
-
-		$message = sprintf( __( 'New user registration on your site %s:' ), $blogname ) . "\r\n\r\n";
-		$message .= sprintf( __( 'Username: %s' ), $user->user_login ) . "\r\n\r\n";
-		$message .= sprintf( __( 'Email: %s' ), $user->user_email ) . "\r\n";
-
-		$result = @wp_mail( get_option( 'admin_email' ), sprintf( __( '[%s] New User Registration' ), $blogname ), $message );
-		gf_user_registration()->log_wp_mail( $result, 'admin' );
-
-		if ( 'admin' === $notify || ( empty( $plaintext_pass ) && empty( $notify ) ) ) {
-			return;
-		}
-
-		$message = sprintf( __( 'Username: %s' ), $user->user_login ) . "\r\n\r\n";
-
-		if ( empty( $plaintext_pass ) ) {
-
-			// Generate something random for a password reset key.
-			$key = wp_generate_password( 20, false );
-
-			/** This action is documented in wp-login.php */
-			do_action( 'retrieve_password_key', $user->user_login, $key );
-
-			// Hashes the plain-text key.
-			if ( empty( $wp_hasher ) ) {
-				require_once ABSPATH . WPINC . '/class-phpass.php';
-				$wp_hasher = new PasswordHash( 8, true );
-			}
-			$hashed = time() . ':' . $wp_hasher->HashPassword( $key );
-
-			// Inserts the hashed key into the database.
-			$wpdb->update( $wpdb->users, array( 'user_activation_key' => $hashed ), array( 'user_login' => $user->user_login ) );
-
-			$message .= __( 'To set your password, visit the following address:' ) . "\r\n\r\n";
-			$message .= '<' . network_site_url( "wp-login.php?action=rp&key=$key&login=" . rawurlencode( $user->user_login ), 'login' ) . ">\r\n\r\n";
-		} else {
-			$message .= sprintf( __( 'Password: %s' ), $plaintext_pass ) . "\r\n\r\n";
-		}
-
-		$message .= wp_login_url() . "\r\n";
-
-		$result = wp_mail( $user->user_email, sprintf( __( '[%s] Your username and password info' ), $blogname ), $message );
-		gf_user_registration()->log_wp_mail( $result, 'user' );
-	}
 }

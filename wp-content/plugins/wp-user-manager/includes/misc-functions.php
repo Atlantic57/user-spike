@@ -382,6 +382,10 @@ function wpum_trigger_upload_file( $field_key, $field ) {
 
 				}
 
+				if( array_key_exists( 'max_file_size' , $field ) && $file_to_upload['size'] > $field['max_file_size'] ) {
+					return new WP_Error( 'file-too-big', sprintf( esc_html__('The uploaded file for "%s" is too big.', 'wpum' ), $field['label'] ) );
+				}
+
 			}
 
 			$uploaded_file = wpum_upload_file( $file_to_upload, array( 'file_key' => $file_key ) );
@@ -654,12 +658,16 @@ function wpum_get_account_page_tabs() {
 
 	$tabs['details'] = array(
 		'id'    => 'details',
-		'title' => __('Edit Account', 'wpum'),
+		'title' => esc_html__('Edit Account', 'wpum'),
+		'priority' => 0,
 	);
 	$tabs['change-password'] = array(
 		'id'    => 'change-password',
-		'title' => __('Change Password', 'wpum'),
+		'title' => esc_html__('Change Password', 'wpum'),
+		'priority' => 1,
 	);
+
+	uasort( $tabs, 'wpum_sort_by_priority' );
 
 	return apply_filters( 'wpum_get_account_page_tabs', $tabs );
 
@@ -731,16 +739,6 @@ function wpum_get_login_redirect_url() {
 
 	return apply_filters( 'wpum_login_redirect_url', esc_url( $url ) );
 
-}
-
-/**
- * Displays psw indicator.
- *
- * @since 1.1.0
- * @return mixed
- */
-function wpum_psw_indicator() {
-	echo '<span id="password-strength">' . __( 'Strength Indicator', 'wpum' ) . '</span>';
 }
 
 /**
@@ -991,4 +989,33 @@ function wpum_array_to_object( $array ) {
  */
 function wpum_is_multi_array( $array ) {
 	return ( count( $array ) !== count( $array, COUNT_RECURSIVE ) );
+}
+
+/**
+ * Function to sort arrays by priority key.
+ *
+ * @since 1.3.0
+ * @param  array $a array
+ * @param  array $b array
+ * @return array
+ */
+function wpum_sort_by_priority( $a, $b ) {
+	if ( $a['priority'] == $b['priority'] )
+			return 0;
+	return ( $a['priority'] < $b['priority'] ) ? -1 : 1;
+}
+
+/**
+ * Verify whether the psw cloacking script is enabled.
+ * Can be disabled through filter.
+ *
+ * @since 1.3.0
+ * @return boolean
+ */
+function wpum_is_psw_cloacking_enabled() {
+
+	$enabled = true;
+
+	return apply_filters( 'wpum_is_psw_cloacking_enabled', $enabled );
+
 }

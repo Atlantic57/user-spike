@@ -335,8 +335,6 @@ function wpum_login_redirect_detection( $url ) {
 
 	if( isset( $_GET[ 'redirect_to' ] ) && $_GET['redirect_to'] !== '' ) {
 		$url = urldecode( $_GET['redirect_to'] );
-	} elseif ( isset( $_SERVER['HTTP_REFERER'] ) && $_SERVER['HTTP_REFERER'] !== '' && ! wpum_get_option( 'always_redirect' ) ) {
-		$url = $_SERVER['HTTP_REFERER'];
 	} elseif( wpum_get_option( 'login_redirect' ) ) {
 		$url = get_permalink( wpum_get_option( 'login_redirect' ) );
 	}
@@ -345,3 +343,48 @@ function wpum_login_redirect_detection( $url ) {
 
 }
 add_filter( 'wpum_login_redirect_url', 'wpum_login_redirect_detection', 99, 1 );
+
+/**
+ * Adjusts page title when visiting users profiles.
+ *
+ * @since 1.3.0
+ * @param string $title Default title for current view.
+ * @param string $sep   Optional separator.
+ */
+function wpum_add_name_to_wptitle( $title, $sep ) {
+
+	if( is_page( wpum_get_core_page_id( 'profile' ) ) && wpum_is_single_profile() ) {
+
+		$name = wpum_get_user_displayname( wpum_get_displayed_user_id() );
+		$title = "$name $sep $title";
+
+		if ( in_array( 'wordpress-seo/wp-seo.php', apply_filters( 'active_plugins', get_option( 'active_plugins' ) ) ) ) {
+			$sitename = get_bloginfo( 'name' );
+		  $title = "$name $sep $sitename";
+		}
+
+	}
+
+	return $title;
+
+}
+add_filter( 'wp_title', 'wpum_add_name_to_wptitle', 16, 2 );
+
+/**
+ * Changes the post's author url to a WPUM Profile url.
+ *
+ * @since 1.4.0
+ *
+ * @param  string $link            author's link.
+ * @param  string $author_id       author's ID number.
+ * @param  string $author_nicename author's nice name.
+ * @return string                  new url.
+ */
+function wpum_change_author_url_to_profile( $link, $author_id, $author_nicename ) {
+
+	$user = new WP_User( $author_id );
+
+	return wpum_get_user_profile_url( $user );
+
+}
+add_filter( 'author_link', 'wpum_change_author_url_to_profile', 10, 3);

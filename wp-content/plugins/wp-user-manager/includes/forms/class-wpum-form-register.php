@@ -46,12 +46,8 @@ class WPUM_Form_Register extends WPUM_Form {
 
 			add_filter( 'wpum/form/validate=register', array( __CLASS__, 'validate_password' ), 10, 3 );
 
-			if( wpum_get_option('display_password_meter_registration') ) {
-				add_action( 'wpum/form/register/after/field=password', 'wpum_psw_indicator', 10 );
-			}
-
 			if( wpum_get_option('login_after_registration') ) {
-				add_action( 'wpum/form/register/success', array( __CLASS__, 'do_login' ), 11, 3 );
+				add_action( 'wpum/form/register/done', array( __CLASS__, 'do_login' ), 11, 3 );
 			}
 
 		}
@@ -99,7 +95,7 @@ class WPUM_Form_Register extends WPUM_Form {
 		} elseif( ! wpum_get_option('login_after_registration') || ! wpum_get_option( 'custom_passwords' ) ) {
 
 			if( wpum_get_option( 'registration_redirect' ) )
-				add_action( 'wpum/form/register/success', array( __CLASS__, 'redirect_on_success' ), 9999, 3 );
+				add_action( 'wpum/form/register/done', array( __CLASS__, 'redirect_on_success' ), 9999, 3 );
 
 		}
 
@@ -289,6 +285,7 @@ class WPUM_Form_Register extends WPUM_Form {
 			'options'     => wpum_get_allowed_user_roles(),
 			'description' => __('Select your user role', 'wpum'),
 			'priority'    => 9999,
+			'value'       => get_option( 'default_role' )
 		);
 
 		return $fields;
@@ -481,6 +478,9 @@ class WPUM_Form_Register extends WPUM_Form {
 			if( ! self::$random_password ):
 				wpum_new_user_notification( $do_user, $pwd );
 			endif;
+
+			// Needed to close the registration process properly.
+			do_action( "wpum/form/register/done" , $user_id, $values );
 
 		}
 

@@ -16,32 +16,94 @@ function member_check_shortcode( $atts, $content = null ) {
 }
 
 /**
+ * Custom Post Types
+ */
+
+ add_action( 'init', 'create_challenges' );
+ function create_challenges() {
+	 register_post_type( 'challenges',
+		 array(
+			 'labels' => array(
+				 'name' => __( 'Challenges' ),
+				 'singular_name' => __( 'Challenge' )
+			 ),
+			 'public' => true,
+			 'has_archive' => true,
+			 'supports' => array(
+				 'title',
+				 'editor',
+				 'author',
+				 'thumbnail',
+				 'comments'
+			 )
+		 )
+	 );
+ }
+
+ add_action( 'init', 'create_solutions' );
+ function create_solutions() {
+	 register_post_type( 'solutions',
+		 array(
+			 'labels' => array(
+				 'name' => __( 'Solutions' ),
+				 'singular_name' => __( 'Solution' )
+			 ),
+			 'public' => true,
+			 'has_archive' => true,
+			 'supports' => array(
+				 'title',
+				 'editor',
+				 'author',
+				 'thumbnail',
+				 'comments'
+			 )
+		 )
+	 );
+ }
+
+
+/**
  * Routes
  */
 
  // A listing of users
- Timber::add_route('users/', function($params){
-	 Timber::load_template('page-users.php', null, 200, $params);
+ Routes::map('users/', function($params){
+	 Routes::load('page-users.php', $params, $query);
  });
 
  // A single user's page
- Timber::add_route('users/:id', function($params){
-	 Timber::load_template('page-user.php', null, 200, $params);
+ Routes::map('users/:id', function($params){
+	 Routes::load('page-user.php', $params, $query);
  });
 
  // A single user's page
- Timber::add_route('users/edit/:id', function($params){
-	 Timber::load_template('page-user-edit.php', null, 200, $params);
+ Routes::map('users/edit/:id', function($params){
+	 Routes::load('page-user-edit.php', $params, $query);
  });
 
  // A single user's page
- Timber::add_route('users/update/:id', function($params){
-	 Timber::load_template('page-user-update.php', null, 200, $params);
+ Routes::map('users/update/:id', function($params){
+	 Routes::load('page-user-update.php', $params, $query);
  });
 
  // A single user's page
- Timber::add_route('login/', function($params){
-	 Timber::load_template('page-user-login.php', null, 200, $params);
+ Routes::map('login/', function($params){
+	 Routes::load('page-user-login.php', $params, $query);
+ });
+
+ // Create a Solution (Form)
+ Routes::map('solutions/create/:cid', function($params){
+	 Routes::load('page-solution-create.php', $params, $query);
+ });
+
+ // Create a Solution (Action)
+ Routes::map('solutions/insert', function($params){
+	 Routes::load('page-solution-insert.php', $params, $query);
+ });
+
+ // Upvote Solution (Action)
+ Routes::map('solutions/upvote', function($params){
+	 Routes::load('page-solution-upvote.php', $params, $query);
  });
 
 Timber::$dirname = array('templates', 'views');
@@ -90,7 +152,6 @@ class StarterSite extends TimberSite {
 		$twig->addFilter('myfoo', new Twig_SimpleFilter('myfoo', array($this, 'myfoo')));
 		return $twig;
 	}
-
 }
 
 new StarterSite();

@@ -235,12 +235,6 @@ function wpum_get_registered_settings() {
 					'type'    => 'select',
 					'options' => wpum_get_psw_lengths()
 				),
-				'display_password_meter_registration' => array(
-					'id'   => 'display_password_meter_registration',
-					'name' => __( 'Display password meter:', 'wpum' ),
-					'desc' => __('Enable to display a password meter into the forms.', 'wpum'),
-					'type' => 'checkbox'
-				),
 				'header_n' => array(
 					'id'   => 'header_n',
 					'name' => __( 'Extra', 'wpum' ),
@@ -373,6 +367,11 @@ function wpum_get_registered_settings() {
 					'name' => __( 'Notifications Settings', 'wpum' ),
 					'type' => 'header'
 				),
+				'trigger_test_email' => array(
+					'id'   => 'trigger_test_email',
+					'name' => __( 'Send test email:', 'wpum' ),
+					'type' => 'hook'
+				),
 				'disable_admin_register_email' => array(
 					'id'   => 'disable_admin_register_email',
 					'name' => __( 'Disable admin registration email:', 'wpum' ),
@@ -436,12 +435,6 @@ function wpum_get_registered_settings() {
 					'class'   => 'select2',
 					'options' => wpum_get_pages()
 				),
-				'always_redirect' => array(
-					'id'   => 'always_redirect',
-					'name' => __( 'Always redirect', 'wpum' ),
-					'desc' => sprintf( __( 'Enable this option to always redirect to the page selected above after login. Please <a href="%s" target="_blank">read documentation</a> for more information.', 'wpum' ), 'http://docs.wpusermanager.com/article/323-understanding-how-login-redirect-works' ),
-					'type' => 'checkbox'
-				),
 				'logout_redirect' => array(
 					'id'      => 'logout_redirect',
 					'name'    => __( 'Logout', 'wpum' ),
@@ -501,11 +494,6 @@ function wpum_get_registered_settings() {
 				'restore_pages' => array(
 					'id'   => 'restore_pages',
 					'name' => __( 'Restore Pages:', 'wpum' ),
-					'type' => 'hook'
-				),
-				'restore_fields' => array(
-					'id'   => 'restore_fields',
-					'name' => __( 'Restore broken fields:', 'wpum' ),
 					'type' => 'hook'
 				),
 				'exclude_usernames' => array(

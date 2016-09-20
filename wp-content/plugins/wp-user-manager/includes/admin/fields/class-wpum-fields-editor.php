@@ -329,7 +329,7 @@ class WPUM_Fields_Editor {
 
 		// Add profile visibility metabox.
 		if( $this->field->meta !== 'password' || $this->field->meta !== 'user_avatar' ) {
-			add_meta_box( 'wpum_profile_visibility', esc_html__( 'Visibility', 'wpum' ), array( $this, 'visibility_settings' ), self::single_field_hook, 'side' );
+			add_meta_box( 'wpum_profile_visibility', esc_html__( 'Visibility & Editing', 'wpum' ), array( $this, 'visibility_settings' ), self::single_field_hook, 'side' );
 		}
 
 	}
@@ -577,11 +577,11 @@ class WPUM_Fields_Editor {
 
 		// Prepare configuration for fields
 		$field_name_args = array(
-			'name'         => 'name',
-			'value'        => esc_html( stripslashes( $this->field->name ) ),
-			'label'        => false,
+			'name'        => 'name',
+			'value'       => esc_html( stripslashes( $this->field->name ) ),
+			'label'       => false,
 			'placeholder' => __('Enter a name for this field', 'wpum'),
-			'class'        => 'text',
+			'class'       => 'text',
 		);
 
 		?>
@@ -634,7 +634,6 @@ class WPUM_Fields_Editor {
 			'name'    => 'set_as_required',
 			'current' => $this->field->is_required,
 			'label'   => esc_html__('Set this field as required', 'wpum'),
-			'desc'    => esc_html__('Enable to force the user to fill this field.', 'wpum'),
 		);
 
 		echo WPUM()->html->checkbox( $args );
@@ -653,7 +652,6 @@ class WPUM_Fields_Editor {
 			'name'    => 'show_on_registration',
 			'current' => $this->field->show_on_registration,
 			'label'   => esc_html__('Display this field on registration', 'wpum'),
-			'desc'    => esc_html__('Enable to display this field on the registration form.', 'wpum'),
 		);
 
 		echo WPUM()->html->checkbox( $args );
@@ -691,14 +689,48 @@ class WPUM_Fields_Editor {
 		$args = array(
 			'name'             => 'field_visibility',
 			'selected'         => $this->field->default_visibility,
-			'label'            => esc_html__( 'Field Visibility', 'wpum' ),
-			'desc'             => esc_html__( 'Determine the visibility of this field.', 'wpum' ),
+			'label'            => esc_html__( 'Profile visibility', 'wpum' ),
+			'desc'             => esc_html__( 'Set the visibility of this field on users profiles.', 'wpum' ),
 			'show_option_all'  => false,
 			'show_option_none' => false,
 			'options'          => wpum_get_field_visibility_settings()
 		);
 
 		echo WPUM()->html->select( $args );
+
+		if( $this->field_object->set_editing === true ) {
+
+			echo "<br/><br/>";
+
+			$args_editing = array(
+				'name'             => 'field_editing',
+				'selected'         => wpum_get_field_option( $this->field->id, 'can_edit' ),
+				'label'            => esc_html__( 'Profile editing', 'wpum' ),
+				'desc'             => esc_html__( 'Set who can edit this field.', 'wpum' ),
+				'show_option_all'  => false,
+				'show_option_none' => false,
+				'options'          => wpum_get_field_editing_settings()
+			);
+
+			echo WPUM()->html->select( $args_editing );
+
+		}
+
+		if( $this->field_object->set_read_only === true ) {
+
+			echo "<br/><br/>";
+
+			$args_read_only = array(
+				'name'    => 'read_only',
+				'current' => wpum_get_field_option( $this->field->id, 'read_only' ) ? true : false,
+				'label'   => esc_html__( 'Set as read only', 'wpum' ),
+				'desc'    => esc_html__( 'Enable to prevent users from editing this field.', 'wpum' ),
+			);
+
+			echo WPUM()->html->checkbox( $args_read_only );
+
+		}
+
 
 	}
 
@@ -768,6 +800,34 @@ class WPUM_Fields_Editor {
 						wpum_update_field_option( $field_id, 'display_full_name', true );
 					} elseif ( $display_full_name === false ) {
 						wpum_delete_field_option( $field_id, 'display_full_name' );
+					}
+
+				}
+
+				// Verify whether the read only option has been enabled.
+				if( $this->field_object->set_read_only === true ) {
+
+					$read_only = isset( $_POST['read_only'] ) ? (bool) $_POST['read_only'] : false;
+
+					if( $read_only ) {
+						wpum_update_field_option( $field_id, 'read_only', true );
+					} else {
+						wpum_delete_field_option( $field_id, 'read_only' );
+					}
+
+				}
+
+				// Verify the editing option has been set for the appropriate fields.
+				if( $this->field_object->set_editing === true ) {
+
+					$can_edit = isset( $_POST['field_editing'] ) ? esc_attr( $_POST['field_editing'] ) : false;
+
+					if( $can_edit && $can_edit !== 'public' ) {
+						wpum_update_field_option( $field_id, 'can_edit', $can_edit );
+					}
+
+					if( $can_edit == 'public' ) {
+						wpum_delete_field_option( $field_id, 'can_edit' );
 					}
 
 				}

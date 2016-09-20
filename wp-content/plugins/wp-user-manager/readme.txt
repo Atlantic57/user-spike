@@ -4,10 +4,10 @@ Plugin URI: https://wpusermanager.com
 Contributors: alessandro.tesoro
 Tags: avatar, avatar upload, author, author profile, community, front-end login, front-end registration, gravatar, custom avatar, login, login page, registration, registration page, admin bar, hide admin bar, custom field registration, custom redirects, custom registration, custom registration form, custom registration page, custom user profile, customize profile, customize registration email, edit profile, front-end user listing, front-end user registration, login redirect, login widget, member directory, minimum password length, minimum password strength, member profile, members profiles, member, member directory, members, profile, profile builder, profiles, registration, restrict content, content restriction, content protection, restrict, sign in, sign up, social login, user, user profile, user profiles, user roles, user-fields, users, captcha, login captcha, registration captcha, frontend registration captcha, frontend login catpcha
 Requires at least: 4.1
-Tested up to: 4.5
+Tested up to: 4.6.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
-Stable tag: 1.2.9
+Stable tag: 1.4.0
 
 WP User Manager is the best solution to manage your users and create front-end profiles for your members.
 
@@ -48,10 +48,13 @@ Read more about our features on [wpusermanager.com](https://wpusermanager.com/fe
 = Free Extensions =
 
 - [Google reCAPTCHA](https://wpusermanager.com/addons/recaptcha): Stop spam registrations on your website for free.
+- [Username Length](https://wordpress.org/plugins/wpum-username-length/): Set minimum and maximum characters length for usernames.
 
 = Paid Extensions =
 
 - [Custom Fields](https://wpusermanager.com/addons/custom-fields/): Add custom fields to user profiles and registration form.
+- [User Verification](https://wpusermanager.com/addons/user-verification): Send a verification link via email upon registration or manually approve users before they can login.
+- [MailChimp](https://wpusermanager.com/addons/mailchimp/): Sync users with MailChimp upon registration & more.
 
 [View all extensions](https://wpusermanager.com/addons)
 
@@ -92,6 +95,43 @@ Here [http://docs.wpusermanager.com/](http://docs.wpusermanager.com/)
 View all the screenshots here [https://wpusermanager.com/screenshots/](https://wpusermanager.com/screenshots/)
 
 == Changelog ==
+
+= 1.4.0 =
+
+- Added: Control visibility of menu items by user status and/or role.
+- Added: Ability to send test email.
+- Added: Post author url will now redirect to wpum user profile.
+- Fixed: User profile page document title, did not display site name.
+- Tweak: "View Profile" link in backend will now open in a new window.
+
+= 1.3.1 =
+
+- fixed: template loader failed to retrieve email templates when customized.
+- fixed: multiple duplicate results when searching for users within a directory.
+
+= 1.3.0 =
+
+Checkout an overview of the new features here [https://wpusermanager.com/?p=17930](https://wpusermanager.com/?p=17930)
+
+- added: single profile page document title will now include the user's display name.
+- added: password field will now show a "show password" checkbox.
+- added: login link shortcode is now hidden when user's logged in.
+- added: settings import and export will now include email settings.
+- added: role field will now automatically set WP's default role as default option into registration form.
+- added: login link in restriction shortcode message will now redirect to previously visited page.
+- added: some fields can now be set as read-only.
+- added: some fields can now be removed from the account editing page and set as available to admins only.
+- added: user directory can now search for first name and last name.
+- added: developers can now change the order of the tabs within the account page.
+- fixed: deprecated notice into a template file.
+- fixed: file upload functionality ignored max file size setting from custom fields addon.
+- fixed: checkbox field into backend user's editing page not showing saved options when updated from frontend.
+- removed: fields restore option no longer needed.
+- removed: referral login redirect option - caused too much confusion.
+
+= 1.2.10 =
+
+- fixed: registration email not sending when auto login + redirect was enabled.
 
 = 1.2.9 =
 

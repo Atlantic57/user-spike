@@ -14,6 +14,20 @@ $post = Timber::query_post();
 $context['post'] = $post;
 $context['comment_form'] = TimberHelper::get_comment_form();
 
+// Custom stuff for challenges
+if($post->post_type == "challenges") {
+	$context['solutions'] = get_posts(array(
+		'post_type' => 'solutions',
+		'meta_query' => array(
+			array(
+				'key' => 'solves',
+				'value' => $post->ID,
+				'compare' => 'LIKE'
+			)
+		)
+	));
+}
+
 if ( post_password_required( $post->ID ) ) {
 	Timber::render( 'single-password.twig', $context );
 } else {

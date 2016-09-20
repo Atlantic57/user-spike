@@ -38,6 +38,10 @@ class WPUM_Field_Type_Text extends WPUM_Field_Type {
 		$this->set_registration = true;
 		// Set requirement
 		$this->set_requirement  = true;
+		// Set read only state.
+		$this->set_read_only    = true;
+		// Set editing ability.
+		$this->set_editing      = true;
 
 	}
 
